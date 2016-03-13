@@ -8,6 +8,7 @@ void setup() {
 
 float angleValueX = 0;
 float angleValueY = 0;
+float speedValue = 1;
 
 void draw() {
   camera();
@@ -15,24 +16,36 @@ void draw() {
   ambientLight(102, 102, 102);
   background(255);
   translate(width/2, height/2, 0);
-  if(angleValueX < -PI/3) {
-    angleValueX = -PI/3;
-  } else if (angleValueX > PI/3) {
-    angleValueX = PI/3;
+  if(speedValue <= 0.2){
+    speedValue = 0.2;
+  } else if(speedValue >= 1.6){
+    speedValue = 1.6;
+  }
+  float limitAngle = (PI/3) /  speedValue;
+  if(angleValueX < -limitAngle) {
+    angleValueX = -limitAngle;
+  } else if (angleValueX > limitAngle) {
+    angleValueX = limitAngle;
   } 
   
-  if(angleValueY < -PI/3) {
-    angleValueY = -PI/3;
-  } else if (angleValueY > PI/3) {
-    angleValueY = PI/3;
+  if(angleValueY < -limitAngle) {
+    angleValueY = -limitAngle;
+  } else if (angleValueY > limitAngle) {
+    angleValueY = limitAngle;
   } 
   
-  rotateX(-angleValueY);
-  rotateZ(angleValueX);
+  rotateX(-angleValueY * speedValue);
+  rotateZ(angleValueX * speedValue);
   box (500, 10, 500);
 }
 
 void mouseDragged() {
    angleValueX += map(mouseX - pmouseX, -width/2, width/2, -PI, PI);
    angleValueY += map(mouseY - pmouseY, -height/2, height/2, -PI, PI);
+}
+
+void mouseWheel(MouseEvent event) {
+  float e = event.getCount();
+  speedValue = speedValue + (0.1 * e);
+  println(speedValue);
 }
