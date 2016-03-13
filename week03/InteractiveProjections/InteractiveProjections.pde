@@ -19,9 +19,9 @@ void draw() {
   if (keyPressed == true) {
     if (key == CODED) {
       if (keyCode == UP) {
-        xAngle -= 0.05;
-      } else if (keyCode == DOWN) {
         xAngle += 0.05;
+      } else if (keyCode == DOWN) {
+        xAngle -= 0.05;
       } else if (keyCode == LEFT) {
         yAngle -= 0.05;
       } else if (keyCode == RIGHT) {
@@ -195,8 +195,8 @@ float[] homogeneous3DPoint (My3DPoint p) {
 
 float[][] rotateXMatrix(float angle) {
   return new float[][] {{1, 0, 0, 0}, 
-    {0, cos(angle), sin(angle), 0}, 
-    {0, -sin(angle), cos(angle), 0}, 
+    {0, cos(angle), -sin(angle), 0}, 
+    {0, sin(angle), cos(angle), 0}, 
     {0, 0, 0, 1}};
 }
 float[][] rotateYMatrix(float angle) {
