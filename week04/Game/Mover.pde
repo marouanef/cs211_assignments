@@ -1,65 +1,77 @@
 class Mover {
 
+  //Position field definition
+  
   PVector location;
   PVector velocity;
-  PVector gravityForce;
-  PVector projectedGravityForce;
+  PVector pVelocity;
+  PVector acceleration;
+  
+  //Force field definition
+  
+  PVector gravity;
   PVector friction;
-  float gravityConstant = 1;
-
-  Mover() {
-    location = new PVector(width/2, height/2 - 5 - 24, 0);
+  
+  //Constants
+  
+  float gravityConstant;
+  float frictionMagnitude;
+  int ballRadius;
+  int plateWidth;
+  int plateDimensions;
+    
+  //Constructor definition
+  
+  Mover(float gravityConstant, float frictionConstant, float normalForce, int ballRadius, int plateWidth, int plateDimensions) {
+    location = new PVector(0, 0, 0);
     velocity = new PVector(0, 0, 0);
-    gravityForce = new PVector(0, 0, 0);
-    projectedGravityForce = new PVector(0, 0, 0);
+    pVelocity = new PVector(0, 0, 0);
+    acceleration = new PVector(0, 0, 0);
+    
+    gravity = new PVector(0, 0, 0);
+    friction = new PVector(0, 0, 0);
+    this.gravityConstant = gravityConstant;
+    
+    frictionMagnitude = frictionConstant * normalForce;
+    
+    this.ballRadius = ballRadius;
+    this.plateWidth = plateWidth;
+    this.plateDimensions = plateDimensions;
   }
 
-  void update(float rotX, float rotZ) {
-    pushMatrix();
-    gravityForce.x = sin(rotZ) * gravityConstant;
-    gravityForce.z = sin(rotX) * gravityConstant;
-    projectedGravityForce = new PVector(gravityForce.x * cos(rotZ), (gravityForce.x * sin(rotZ)) + (gravityForce.z * sin(rotX)),gravityForce.z * cos(rotX));
-    
-    //gravityForce.y = sqrt((gravityForce.x * gravityForce.x) + (gravityForce.z * gravityForce.z)) * sin(abs(rotX - rotZ));
-    
-    //gravityForce.x = sin(rotZ) * cos(rotZ) * gravityConstant;
-    //gravityForce.z = sin(rotX) * cos(rotZ) * gravityConstant;
-    //gravityForce.y = sin(rotZ) * sin(rotZ) * gravityConstant + sin(rotX) * sin(rotX) * gravityConstant;
-    
-    velocity.add(projectedGravityForce);
-    
-    float normalForce = 1;
-    float mu = 0.01;
-    float frictionMagnitude = normalForce * mu;
+  void update(float rotationX, float rotationZ) {
     friction = velocity.get();
     friction.mult(-1);
     friction.normalize();
     friction.mult(frictionMagnitude);
+    gravity.x = sin(rotationZ) * gravityConstant;
+    gravity.z = sin(rotationX) * gravityConstant;   
+    velocity.add(gravity);
     velocity.add(friction);
-    
     location.add(velocity);
-    println("rotX = " + rotX + " rotZ = " + rotZ);
-    println("Location " + location.x  + " " + location.y + " " + location.z);
-    println("Velocity " + velocity.x + " " + velocity.y + " " + velocity.z);
-    println("Gravity force " + gravityForce.x + " " + gravityForce.y + " " + gravityForce.z);
-    println("Friction" + friction.x + " " + friction.y + " " + friction.z);
-    println();
-    popMatrix();
+    
   }
 
+  void checkEdges() {
+     if (location.x > plateDimensions / 2) {
+      velocity.x = -abs(velocity.x);
+      location.x= plateDimensions / 2;
+    } else if (location.x < -plateDimensions / 2) {
+      velocity.x = abs(velocity.x);
+      location.x = - plateDimensions / 2;
+    }
+    if (location.z > plateDimensions / 2) {
+      velocity.z = -abs(velocity.z);
+      location.z= plateDimensions / 2;
+    } else if (location.z < -plateDimensions / 2) {
+      velocity.z = abs(velocity.z);
+      location.z= - plateDimensions / 2;
+    }
+  }
   void display() {
+    fill(122, 187, 180);
     translate(location.x, location.y, location.z);
-    sphere(24);
+    sphere(ballRadius);
   }
-
-  void checkEdges() { //<>//
-    if(width/2 - location.x > 250 || width/2 - location.x < -250) {
-     velocity.x = -velocity.x; 
-     velocity.y = -abs(velocity.y);
-    }
-    if(location.z > 250 || location.z < -250) {
-     velocity.z = -velocity.z; 
-     velocity.y = -abs(velocity.y);
-    }
-  }
+   //<>//
 }
