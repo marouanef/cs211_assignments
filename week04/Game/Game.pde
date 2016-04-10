@@ -1,49 +1,98 @@
-Mover mover;
-Cylinder cylinder;
+//Plate definition
+
+final int   plateWidth      = 10;
+final int   plateDimensions = 500;
+
+//Plate movement speed
+
+float       speedValue           = 1;
+final float speedValueLowerLimit = 0.2;
+final float speedValueUpperLimit = 1.6;
+
+//Plate tilting angle
+
+float       angleValueX = 0;
+float       angleValueY = 0;
+final float limitAngle  = PI/3;
+final float drawingX    = 0;
+final float drawingY    = -PI/2;
+
+//Mover
+
+Mover       mover;
+final int   ballRadius        = 24;
+final float gravityConstant   = 0.1;
+final float frictionMagnitude = 0.01;
+
+//Cylinders
+
+Cylinder           cylinder;
+int                cylinderBaseSize   = 20; 
+int                cylinderHeight     = 50; 
+int                cylinderResolution = 40;
+ArrayList<PVector> cylinders          = new ArrayList<PVector>();
+
+//Mode definition
+
+enum Mode {
+  DRAWING, GAME
+};
+Mode mode = Mode.GAME;
+
+//Settings
 
 void settings() {
   size(1920, 1000, P3D);
 }
 
+//Sketch setup
+
 void setup() {
   noStroke();
-  mover = new Mover(0.1, 0.01, 1, 24, 10, 500);
-  cylinder = new Cylinder();
+  mover    = new Mover(gravityConstant, frictionMagnitude, ballRadius, plateDimensions, cylinderBaseSize);
+  cylinder = new Cylinder(cylinderBaseSize, cylinderHeight, cylinderResolution);
 }
 
-float angleValueX = 0;
-float angleValueY = 0;
-float pauseX = 0;
-float pauseY = -PI/2;
-boolean pause = false;
-float speedValue = 1;
-ArrayList<PVector> cylinders = new ArrayList<PVector>();
+//Mode Setup Functions
 
+void gameMode() {
+  mode = Mode.GAME;
+}
 
+void drawingMode() {
+  mode = Mode.DRAWING;
+}
+
+boolean isInDrawingMode() {
+  return mode == Mode.DRAWING;
+}
+
+//Drawing function
 void draw() {
 
-  //____SETTINGS____
+  //SETTINGS :
 
   camera();
-  if(pause) {
+  ambientLight(102, 102, 102);
+  if (isInDrawingMode()) {
     directionalLight(50, 100, 125, 0, 0, -1);
   } else {
     directionalLight(50, 100, 125, 1, 1, 0);
   }
-  ambientLight(102, 102, 102);
   background(255);
 
-  //____PLATE DRAWING____
+  //DRAWING :
 
   //Speed value limit definition
-  if (speedValue <= 0.2) {
-    speedValue = 0.2;
-  } else if (speedValue >= 1.6) {
-    speedValue = 1.6;
+  
+  if (speedValue <= speedValueLowerLimit) {
+    speedValue = speedValueLowerLimit;
+  } else if (speedValue >= speedValueUpperLimit) {
+    speedValue = speedValueUpperLimit;
   } 
 
   //Angle limit definition
-  float limitAngle = (PI/3);
+
   if (angleValueX < -limitAngle) {
     angleValueX = -limitAngle;
   } else if (angleValueX > limitAngle) {
@@ -55,64 +104,72 @@ void draw() {
     angleValueY = limitAngle;
   } 
 
-  //Rotation and drawing
+  //Translation, rotation and drawing of the plate
+  
   pushMatrix();
   translate(width/2, height/2, 0);
-  if (pause) {
-    rotateX(pauseY);
-    rotateZ(pauseX);
-  } else {
+  if (isInDrawingMode()) { //Places the plate with a view from above
+    rotateX(drawingY);
+    rotateZ(drawingX);
+  } else { //rotates the plate normally
     rotateX(-angleValueY);
     rotateZ(angleValueX);
   }
-  box (500, 10, 500);
+  box(plateDimensions, plateWidth, plateDimensions);
+
+  //Cylinders drawing 
   
   for (int i = 0; i < cylinders.size(); i++) {
     PVector vec = cylinders.get(i);
     pushMatrix();
-    translate(vec.x, 0, vec.z);
+    translate(vec.x, -(plateWidth / 2), vec.z);
     shape(cylinder.shape);
     popMatrix();
   } 
+
+  //Ball drawing
   
   pushMatrix();
-  
-  if (!pause) {
-    translate(0, -29, 0);
+  if (!isInDrawingMode()) { //Only draws the ball when in gaming mode
+    translate(0, -(plateWidth / 2) - ballRadius, 0);
     mover.update(angleValueY, angleValueX);
     mover.checkEdges();
+    mover.checkCylinderCollision(cylinders);
     mover.display();
   }
-
   popMatrix();
   popMatrix();
 }
 
-boolean checkMousePosition() {
-  if(mouseX > width/2 + 230 || mouseX < width/2 - 230) {
-     return false; 
+//Method that checks if the mouse is inside the box while in drawing mode
+
+boolean checkIfMouseIsInThePlate() {
+  if ((mouseX - (width / 2) >= ((plateDimensions / 2) - cylinderBaseSize)) || mouseX - (width / 2) <= -((plateDimensions / 2) - cylinderBaseSize)) {
+    return false;
   } else {
-    if(mouseY > height/2 + 230 || mouseX < height/2 - 230) {
-        return false;
-    } else {
-        return true; 
-    }
+    return ((mouseY - (height / 2) <= ((plateDimensions / 2) - cylinderBaseSize)) && mouseY - (height / 2) >= -((plateDimensions / 2) - cylinderBaseSize));
   }
 }
 
-void addCylinder() {
-  cylinders.add(new PVector(-(width/2-mouseX), 0, -(height/2-mouseY)));
+//Method that adds a cylinder to the array
+
+void addCylinder() {  
+  cylinders.add(new PVector( -(width / 2 - mouseX), 0, -(height / 2 - mouseY)));
 }
 
+//User interaction methods
+
 void mouseDragged() {
-  angleValueX += map(mouseX - pmouseX, -width/2, width/2, -PI, PI) * speedValue;
-  angleValueY += map(mouseY - pmouseY, -height/2, height/2, -PI, PI) * speedValue;
+  if (!isInDrawingMode()) {
+    angleValueX += map(mouseX - pmouseX, -width / 2, width / 2, -PI, PI) * speedValue;
+    angleValueY += map(mouseY - pmouseY, -height / 2, height / 2, -PI, PI) * speedValue;
+  }
 }
 
 void mousePressed() {
-  if (pause && checkMousePosition()) {
+  if (isInDrawingMode() && checkIfMouseIsInThePlate()) {
     addCylinder();
-  } 
+  }
 }
 
 void mouseWheel(MouseEvent event) {
@@ -123,7 +180,7 @@ void mouseWheel(MouseEvent event) {
 void keyPressed() {
   if (key == CODED) {
     if (keyCode == SHIFT) {
-      pause = true;
+      drawingMode();
     }
   }
 }
@@ -131,7 +188,7 @@ void keyPressed() {
 void keyReleased() {
   if (key == CODED) {
     if (keyCode == SHIFT) {
-      pause = false;
+      gameMode();
     }
   }
 }

@@ -52,28 +52,6 @@ class My2DBox {
     this.s = s;
   }
   void render() {
-    //strokeWeight(4);
-    //for (int i = 0; i < s.length; i++) {
-    // My2DPoint point1 = s[i];
-    // if (i<4) {
-    //   stroke(255, 0, 0);
-    // } else {
-    //   stroke(0, 255, 0);
-    // }
-    // if ( (i + 1) % 4 != 0) {
-    //   My2DPoint point2 = s[i + 1];
-
-    //   line(point1.x, point1.y, point2.x, point2.y);
-    // } else {
-    //   My2DPoint point2 = s[i - 3];
-    //   line(point1.x, point1.y, point2.x, point2.y);
-    // }
-    // if (i < 4) {
-    //   My2DPoint point3 = s[i + 4];
-    //   stroke(0, 0, 255);
-    //   line(point1.x, point1.y, point3.x, point3.y);
-    // }
-    //}
     strokeWeight(4);
     stroke(0, 255, 0);
     for (int i = 4; i < 8; i++) {

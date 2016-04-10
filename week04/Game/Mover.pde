@@ -2,60 +2,64 @@ class Mover {
 
   //Position field definition
   
-  PVector location;
-  PVector velocity;
-  PVector pVelocity;
-  PVector acceleration;
+  private final PVector location;
+  private final PVector velocity;
   
   //Force field definition
   
-  PVector gravity;
-  PVector friction;
+  private final PVector gravity;
+  private final PVector friction;
   
   //Constants
   
-  float gravityConstant;
-  float frictionMagnitude;
-  int ballRadius;
-  int plateWidth;
-  int plateDimensions;
+  private final float gravityConstant;
+  private final float frictionMagnitude;
+  private final int   ballRadius;
+  private final int   plateDimensions;
+  private final int   collisionDistance;
     
-  //Constructor definition
+  //Constructor
   
-  Mover(float gravityConstant, float frictionConstant, float normalForce, int ballRadius, int plateWidth, int plateDimensions) {
+  Mover(float gravityConstant, float frictionMagnitude, int ballRadius, int plateDimensions, int cylinderBaseSize) {
     location = new PVector(0, 0, 0);
     velocity = new PVector(0, 0, 0);
-    pVelocity = new PVector(0, 0, 0);
-    acceleration = new PVector(0, 0, 0);
     
     gravity = new PVector(0, 0, 0);
-    friction = new PVector(0, 0, 0);
     this.gravityConstant = gravityConstant;
     
-    frictionMagnitude = frictionConstant * normalForce;
+    friction = new PVector(0, 0, 0);
+    this.frictionMagnitude = frictionMagnitude;
     
     this.ballRadius = ballRadius;
-    this.plateWidth = plateWidth;
     this.plateDimensions = plateDimensions;
+    collisionDistance = cylinderBaseSize + ballRadius;
   }
-
+  
+  //Changes gravity force and friction then updates velocity and location
+  
   void update(float rotationX, float rotationZ) {
-    friction = velocity.get();
+    gravity.x = sin(rotationZ) * gravityConstant;
+    gravity.z = sin(rotationX) * gravityConstant;   
+    
+    friction.x = velocity.x;
+    friction.y = velocity.y;
+    friction.z = velocity.z;
     friction.mult(-1);
     friction.normalize();
     friction.mult(frictionMagnitude);
-    gravity.x = sin(rotationZ) * gravityConstant;
-    gravity.z = sin(rotationX) * gravityConstant;   
+
     velocity.add(gravity);
     velocity.add(friction);
     location.add(velocity);
     
   }
-
+  
+  //Checks if there is a collision with the edges of the plate
+  
   void checkEdges() {
      if (location.x > plateDimensions / 2) {
       velocity.x = -abs(velocity.x);
-      location.x= plateDimensions / 2;
+      location.x = plateDimensions / 2;
     } else if (location.x < -plateDimensions / 2) {
       velocity.x = abs(velocity.x);
       location.x = - plateDimensions / 2;
@@ -68,10 +72,26 @@ class Mover {
       location.z= - plateDimensions / 2;
     }
   }
+  
+  //Checks if there is a collision with a cylinder  
+  
+  void checkCylinderCollision(ArrayList<PVector> cylinders) {
+    for(PVector cylinder : cylinders) {
+      float distance = sqrt(((location.x - cylinder.x) * (location.x - cylinder.x)) + ((location.z - cylinder.z) * (location.z - cylinder.z)));
+      if(distance <= collisionDistance) {
+        PVector normalVector = PVector.sub(location, cylinder);
+        normalVector.normalize();
+        normalVector.mult(PVector.dot(velocity, normalVector) * 2);
+        velocity.sub(normalVector);
+      }
+    }
+  }
+  
+  //Displays the ball
+  
   void display() {
     fill(122, 187, 180);
     translate(location.x, location.y, location.z);
     sphere(ballRadius);
-  }
-   //<>//
+  } //<>//
 }

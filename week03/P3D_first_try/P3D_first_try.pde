@@ -12,19 +12,19 @@ void draw() {
   ambientLight(102, 102, 102);
   background(200);
   translate(width/2, height/2, 0);
-  float rz = map(mouseY, 0, height, 0, PI);
+  float rx = map(mouseY, 0, height, 0, PI);
   float ry = map(mouseX, 0, width, 0, PI);
-  rotateZ(rz);
   rotateY(ry);
+  rotateX(-rx);
   for (int x = -2; x <= 2; x++) {
-    for (int y = -2; y <= 2; y++) {
-      for (int z = -2; z <= 2; z++) {
-        pushMatrix();
-        translate(100 * x, 100 * y, -100 * z);
-        box(50);
-        popMatrix();
-      }
-    }
+   for (int y = -2; y <= 2; y++) {
+     for (int z = -2; z <= 2; z++) {
+       pushMatrix();
+       translate(100 * x, 100 * y, -100 * z);
+       box(50);
+       popMatrix();
+     }
+   }
   }
 }
 

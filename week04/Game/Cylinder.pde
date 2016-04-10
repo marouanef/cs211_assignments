@@ -1,15 +1,16 @@
-float cylinderBaseSize = 20; 
-float cylinderHeight = 50; 
-int cylinderResolution = 40;
-
 class Cylinder {
   
-  public PShape shape = new PShape();
-  PShape openCylinder = new PShape(); 
-  PShape topOfCylinder = new PShape();
+  //Fields
+  
+  PShape shape            = new PShape();
+  PShape openCylinder     = new PShape(); 
+  PShape topOfCylinder    = new PShape();
   PShape bottomOfCylinder = new PShape();
-
-  Cylinder() {
+  
+  
+  //Constructor
+  
+  Cylinder(float cylinderBaseSize, float cylinderHeight, int cylinderResolution) {
     shape = createShape(GROUP);
     
     float angle;
@@ -21,7 +22,9 @@ class Cylinder {
       x[i] = sin(angle) * cylinderBaseSize;
       y[i] = cos(angle) * cylinderBaseSize;
     }
-
+    
+    //Open cylinder
+    
     openCylinder = createShape();
     openCylinder.beginShape(QUAD_STRIP);
     for (int i = 0; i < x.length; i++) { 
@@ -31,7 +34,9 @@ class Cylinder {
     openCylinder.endShape();
     
     shape.addChild(openCylinder);
-
+  
+    //Top of the cylinder
+    
     topOfCylinder = createShape();
     topOfCylinder.beginShape(TRIANGLE_FAN);
     topOfCylinder.vertex(0, -cylinderHeight, 0);
@@ -39,8 +44,10 @@ class Cylinder {
       topOfCylinder.vertex(x[i], -cylinderHeight, y[i]);
     }
     topOfCylinder.endShape();
-
+    
     shape.addChild(topOfCylinder);
+    
+    //Bottom of the cylinder
     
     bottomOfCylinder = createShape();
     bottomOfCylinder.beginShape(TRIANGLE_FAN);
