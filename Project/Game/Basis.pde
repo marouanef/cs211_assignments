@@ -55,7 +55,7 @@ class Basis {
       println("    Type : " + type);
     }
   }
-  
+
   void setToCentered() {
     type = BasisType.CENTERED;
   }
@@ -74,12 +74,12 @@ enum BasisType {
     PLATE("On the top center of the plate"), 
     BALL("In the center of the ball"), 
     OTHER("Other");
-    
+
   private String name;
   BasisType(String name) {
     this.name = name;
   }
-  
+
   public String toString() {
     return name;
   }

@@ -2,13 +2,13 @@ class Ball {
 
   private final PVector location;
 
-  BallPhysics physics;
+  BallPhysics           physics;
 
-  private final int   collisionDistance;
+  private final int     collisionDistance;
 
   Ball() {
-    location = new PVector(0, 0, 0);
-    physics = new BallPhysics(new PVector(0, 0, 0), new PVector(0, 0, 0), new PVector(0, 0, 0));
+    location          = new PVector(0, 0, 0);
+    physics           = new BallPhysics(new PVector(0, 0, 0), new PVector(0, 0, 0), new PVector(0, 0, 0));
     collisionDistance = cylinderBaseSize + ballRadius;
   }
 
@@ -40,6 +40,7 @@ class Ball {
       if (distance <= collisionDistance) {
         PVector normalVector = PVector.sub(location, cylinder);
         normalVector.normalize();
+        adjust(normalVector, distance);
         physics.bounceOffCylinderSurface(normalVector);
       }
     }
@@ -47,6 +48,11 @@ class Ball {
 
   void display() {
     basis.translated(location);
-    paint.ball();
+    draw.shapes.thisOne(Shape.BALL);
+  }
+
+  private void adjust(PVector normalVector, float distance) {
+    PVector adjustingVector = new PVector(normalVector.x, normalVector.y, normalVector.z);
+    location.add(adjustingVector.mult(collisionDistance - distance));
   }
 }

@@ -1,5 +1,4 @@
 class Cylinder {
-
   PShape shape            = new PShape();
   PShape openCylinder     = new PShape(); 
   PShape topOfCylinder    = new PShape();

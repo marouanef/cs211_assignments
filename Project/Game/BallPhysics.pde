@@ -6,7 +6,7 @@ class BallPhysics {
 
   BallPhysics (PVector gravity, PVector friction, PVector velocity) 
   {
-    this.gravity = gravity;
+    this.gravity  = gravity;
     this.friction = friction;
     this.velocity = velocity;
   }
@@ -21,16 +21,19 @@ class BallPhysics {
 
   void bounceOffXEdges(int direction)
   {
+    score.subThis(velocity);
     velocity.x = direction * abs(velocity.x);
   }
 
   void bounceOffZEdges(int direction) 
   {
+    score.subThis(velocity);
     velocity.z = direction * abs(velocity.z);
   }
 
   void bounceOffCylinderSurface(PVector normalVector) 
   {
+    score.addThis(velocity);
     normalVector.mult(PVector.dot(velocity, normalVector) * 2);
     velocity.sub(normalVector);
   }

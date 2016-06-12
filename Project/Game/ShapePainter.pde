@@ -4,13 +4,29 @@ class ShapePainter {
   {
   }
 
-  void ball()
+  void thisOne(Shape shape) {
+    switch (shape) {
+    case BALL      : 
+      ball();
+      break;
+
+    case PLATE     : 
+      plate();
+      break;
+
+    case CYLINDERS : 
+      cylinders();
+      break;
+    }
+  }
+
+  private void ball()
   {
     fill(ballColor);
     sphere(ballRadius);
   }
 
-  void plate() 
+  private void plate() 
   {
     if (!mode.inDrawingMode()) {
       int transparency;
@@ -26,15 +42,19 @@ class ShapePainter {
     box(plateDimensions, plateWidth, plateDimensions);
   }
 
-  void cylinders() 
+  private void cylinders() 
   {
     cylinder.shape.setFill(cylinderColor);
-    for (int i = 0; i < cylinders.size(); i++) {
-      PVector vector = cylinders.get(i);
+    for (int i = 0; i < data.cylinders.size(); i++) {
+      PVector vector = data.cylinders.get(i);
       pushMatrix();
       basis.translated(vector);
       shape(cylinder.shape);
       popMatrix();
     }
   }
+}
+
+enum Shape {
+  BALL, PLATE, CYLINDERS;
 }
