@@ -158,6 +158,9 @@ class HoughTransform {
     List<int[]> quads = graph.findCycles();
 
     for (int[] quad : quads) {
+      
+      List<PVector> sortedQuad;
+      
       PVector l1 = lines.get(quad[0]);
       PVector l2 = lines.get(quad[1]);
       PVector l3 = lines.get(quad[2]);

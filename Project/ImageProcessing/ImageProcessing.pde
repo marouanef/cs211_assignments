@@ -1,6 +1,10 @@
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Collections;
+import java.util.Comparator;
+import processing.core.PVector;
+import papaya.*;
 
 PImage img;
 HoughTransform hough;
@@ -47,7 +51,6 @@ void process() {
   //image(processor.img, 0, 0);
   hough.compute(processor.img);
   hough.updateLines(4);
-  hough.updateIntersections();
 }
 
 void drawImages() {
@@ -55,5 +58,5 @@ void drawImages() {
   hough.drawLines();
   image(processor.img, 800, 0);
   hough.drawAccumulator();
-  hough.drawIntersections();
+  hough.intersections();
 }
