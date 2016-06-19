@@ -1,10 +1,3 @@
-//--------------------------------------------------------------------------------
-//--------------------------------TO-DO------------------------------------------
-//--------------------------------------------------------------------------------
-
-//continue implementation of corners in Hough
-
-
 
 //--------------------------------------------------------------------------------
 //-------------------------------IMPORTS------------------------------------------
@@ -14,10 +7,23 @@ import java.util.Map;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Arrays;
 import papaya.*;
+
+//--------------------------------------------------------------------------------
+//--------------------------------TO-DO------------------------------------------
+//--------------------------------------------------------------------------------
+
+//continue implementation of corners in Hough
+
+import processing.video.*;
+
+PImage img;
+boolean imageProcDone = false;
+Movie cam;
+
 
 //--------------------------------------------------------------------------------
 //-------------------------------OBJECTS------------------------------------------
@@ -31,6 +37,7 @@ Painter    draw;
 Data       data;
 Score      score;
 HScrollbar bar;
+ImageProcessing imageProc;
 
 //--------------------------------------------------------------------------------
 //-------------------------------DIMENSIONS---------------------------------------
@@ -110,6 +117,12 @@ final String velocityS  = "Velocity : ";
 final String lastScoreS = "Last Score : ";
 
 //--------------------------------------------------------------------------------
+//-------------------------------IMAGE-PROCESSING---------------------------------
+//--------------------------------------------------------------------------------
+
+
+
+//--------------------------------------------------------------------------------
 //-------------------------------SKETCH-SETTINGS----------------------------------
 //--------------------------------------------------------------------------------
 
@@ -132,7 +145,14 @@ void setup ()
   draw     = new Painter();
   data     = new Data();
   score    = new Score();
-  bar      = new HScrollbar(width - scoreChartWidth - 10  , height - 30, 500, 20);
+  bar      = new HScrollbar(width - scoreChartWidth - 10, height - 30, 500, 20);
+  img = loadImage("board2.jpg");
+  imageProc = new ImageProcessing();
+  String []args = {"Image processing window"};
+  PApplet.runSketch(args, imageProc);
+  
+  cam = new Capture(this, cameras[63]);
+cam.start();
 }
 
 //--------------------------------------------------------------------------------
@@ -141,11 +161,16 @@ void setup ()
 
 void draw() 
 {
-  draw.setter.setSketch();
+  draw.setter.setSketch(); //<>//
   draw.scoreBoard();
   draw.setter.setSpeed();
   draw.setter.setAngleValues();
   draw.game();
+  if (imageProc.ready && !imageProcDone) {
+    PVector rot = imageProc.rotations;
+    println("Rotation for input image : " + degrees(rot.x) + " " + degrees(rot.y) + " " + degrees(rot.z));
+    imageProcDone = true;
+  }
 }
 
 //--------------------------------------------------------------------------------

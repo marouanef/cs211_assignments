@@ -18,10 +18,27 @@ class TwoDThreeD {
     // Store here the 3D coordinates of the corners of
     // the real Lego board, in homogenous coordinates
     // and clockwise.
-    {-plateDimensions / 2, 0, -plateDimensions / 2}, 
-    {plateDimensions / 2, 0, -plateDimensions / 2},
-    {plateDimensions / 2, 0, plateDimensions / 2},
-    {-plateDimensions / 2, 0, plateDimensions / 2}
+    
+    //1st try
+    
+    //{-plateDimensions / 2, 0, -plateDimensions / 2, 1}, 
+    //{plateDimensions / 2, 0, -plateDimensions / 2, 1},
+    //{plateDimensions / 2, 0, plateDimensions / 2, 1},
+    //{-plateDimensions / 2, 0, plateDimensions / 2, 1}
+    
+    //2nd try
+    
+    //{img.width - plateDimensions, img.height / 2, -plateDimensions / 2, 1}, 
+    //{img.width - plateDimensions / 2, img.height / 2, -plateDimensions / 2, 1},
+    //{img.width - plateDimensions / 2, img.height / 2, plateDimensions / 2, 1},
+    //{img.width - plateDimensions, img.height / 2,  plateDimensions / 2, 1}
+    
+    //3rd try
+    
+    {-boardSize / 2, -boardSize / 2, 0, 1}, 
+    {boardSize / 2, -boardSize / 2, 0, 1},
+    {boardSize / 2, boardSize / 2, 0, 1},
+    {-boardSize / 2, boardSize / 2, 0, 1}  
   };
 
   public TwoDThreeD(int width, int height) {
@@ -62,7 +79,7 @@ class TwoDThreeD {
   }
 
 
-  double[][] solveExtrinsicMatrix(List<PVector> points2D) {
+  double[][] solveExtrinsicMatrix(List<PVector> points2D) { //<>//
 
     // p ~= K · [R|t] · P
     // with P the (3D) corners of the physical board, p the (2D) 
@@ -72,7 +89,7 @@ class TwoDThreeD {
     //
     // => We want to solve: (K^(-1) · p) X ([R|t] · P) = 0
 
-    float [][] invK=Mat.inverse(K);
+    float [][] invK = Mat.inverse(K);
 
     float[][] projectedCorners = new float[4][3];
 
@@ -81,9 +98,9 @@ class TwoDThreeD {
       // store in projectedCorners the result of (K^(-1) · p), for each 
       // corner p found in the webcam image.
       // You can use Mat.multiply to multiply a matrix with a vector.
-      float[][] corner = {{points2D.get(i).x, points2D.get(i).y, 1}};
-      float[][] multiplication = Mat.multiply(invK, corner);
-      projectedCorners[i] = multiplication[0];      
+      
+      float[] corner = {  points2D.get(i).x, points2D.get(i).y, 1};
+      projectedCorners[i] = Mat.multiply(invK, corner);
     }
 
     // 'A' contains the cross-product (K^(-1) · p) X P

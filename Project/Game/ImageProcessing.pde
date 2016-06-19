@@ -1,26 +1,33 @@
-class ImageProcessing extends PApplet {
+class ImageProcessing extends PApplet { //<>// //<>//
 
-  PImage img;
   HoughTransform hough;
   ImageProcessor processor;
+  TwoDThreeD computations;
+  PVector rotations;
+  boolean ready = false;
 
   public void settings() {
     size(1966, 600);
   }
 
   public void setup() {
-    img = loadImage("board4.jpg");
+    println("Setting up image processing...");
     processor = new ImageProcessor(img);
     hough = new HoughTransform();
+    computations = new TwoDThreeD(img.width, img.height);
     noLoop(); // no interactive behaviour: draw() will be called only once.
+    println("Set-up complete");
   }
 
   public void draw() {
     process();
     drawImages();
+    updateRotations();
+    ready();
   }
 
   void process() {
+    println("Processing image...");
     int hueMean = 0;
     int counter = 0;
     float brightnessMean = -1;
@@ -34,7 +41,7 @@ class ImageProcessing extends PApplet {
 
     hueMean /= counter;
     brightnessMean /= counter;
-    processor.hueFilter(hueMean - 10, hueMean + 10);
+    processor.hueFilter(hueMean - 15, hueMean + 10);
     processor.saturationFilter(100, 255);
     //image(processor.img, 0, 0);
     processor.gauss(100.f);
@@ -45,13 +52,30 @@ class ImageProcessing extends PApplet {
     //image(processor.img, 0, 0);
     hough.compute(processor.img);
     hough.updateLines(4);
+    hough.updateIntersections();
+    println("Processing complete");
   }
 
   void drawImages() {
+    println("Drawing results...");
+    println("    Drawing original image");
     image(img, 0, 0);
     hough.drawLines();
-    image(processor.img, 800, 0);
+    hough.drawIntersections();
     hough.drawAccumulator();
-    hough.intersections();
+    println("    Drawing processed image");
+    image(processor.img, 800, 0);
+    println("Drawing complete");
+  }
+
+  void updateRotations() {
+    println("Updating rotations...");
+    rotations = computations.get3DRotations(hough.intersections);
+    println("Update complete");
+  }
+
+  void ready() {
+    ready = true;
+    println("Ready for data fetch");
   }
 }

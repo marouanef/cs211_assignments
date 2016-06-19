@@ -60,7 +60,7 @@ class QuadGraph {
       for (int i = 1; i < cy.length; i++) {
         s += "," + cy[i];
       }
-      System.out.println(s);
+      System.out.println("        Found cycle : " + s);
     }
     return cycles;
   }
@@ -225,7 +225,7 @@ class QuadGraph {
       || (i1<0 && i2<0 && i3<0 && i4<0))
       return true;
     else 
-    System.out.println("Eliminating non-convex quad");
+    System.out.println("        Eliminating non-convex quad");
     return false;
   }
 
@@ -240,11 +240,9 @@ class QuadGraph {
 
     float area = Math.abs(0.5f * (i1 + i2 + i3 + i4));
 
-    //System.out.println(area);
-
     boolean valid = (area < max_area && area > min_area);
 
-    if (!valid) System.out.println("Area out of range");
+    if (!valid) System.out.println("        Area out of range");
 
     return valid;
   }
@@ -255,7 +253,7 @@ class QuadGraph {
   boolean nonFlatQuad(PVector c1, PVector c2, PVector c3, PVector c4) {
 
     // cos(70deg) ~= 0.3
-    float min_cos = 0.5f;
+    float min_cos = 0.3f;
 
     PVector v21= PVector.sub(c1, c2);
     PVector v32= PVector.sub(c2, c3);
@@ -270,14 +268,15 @@ class QuadGraph {
     if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos && cos4 < min_cos)
       return true;
     else {
-      System.out.println("Flat quad");
+      System.out.println("        Flat quad");
       return false;
     }
   }
 
 
   List<PVector> sortCorners(List<PVector> quad) {
-
+    println("            Input quad  : " + quad.get(0) + quad.get(1) + quad.get(2) + quad.get(3));
+    
     // 1 - Sort corners so that they are ordered clockwise
     PVector a = quad.get(0);
     PVector b = quad.get(2);
@@ -296,7 +295,7 @@ class QuadGraph {
 
     while (quad.get(0).dist(origin) != distToOrigin)
       Collections.rotate(quad, 1);
-
+    println("            Sorted quad : " + quad.get(0) + quad.get(1) + quad.get(2) + quad.get(3));
     return quad;
   }
 }
